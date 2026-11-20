@@ -1,0 +1,6 @@
+{
+  "task_id": "atomic-order-reservation",
+  "test_file": "checks/test_order.py",
+  "timeout_seconds": 15,
+  "description": "Implement atomic order reservation with integer-cent totals."
+}

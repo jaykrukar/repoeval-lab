@@ -1,0 +1,22 @@
+{
+  "starter": {
+    "errors": 0,
+    "exit_code": 1,
+    "failures": 16,
+    "passed": false,
+    "skipped": 0,
+    "task_id": "atomic-order-reservation",
+    "tests": 18,
+    "timed_out": false
+  },
+  "solution": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "passed": true,
+    "skipped": 0,
+    "task_id": "atomic-order-reservation",
+    "tests": 18,
+    "timed_out": false
+  }
+}
