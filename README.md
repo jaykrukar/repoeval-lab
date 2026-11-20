@@ -1,5 +1,7 @@
 # RepoEval Lab
 
+[![Tests](https://github.com/jaykrukar/repoeval-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/jaykrukar/repoeval-lab/actions/workflows/tests.yml)
+
 A **small, working evaluation harness** for repository-style Python coding challenges: task manifests, immutable external tests, candidate submissions, result reporting, and timeouts.
 
 > Portfolio prototype. **Not** a security sandbox, production RL environment, or evidence of previous contract experience. The runner executes candidate code. Only test trusted code on your host or use a properly isolated external container.
