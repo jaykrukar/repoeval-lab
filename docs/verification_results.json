@@ -18,5 +18,25 @@
     "task_id": "atomic-order-reservation",
     "tests": 18,
     "timed_out": false
+  },
+  "retry_after_starter": {
+    "errors": 0,
+    "exit_code": 1,
+    "failures": 20,
+    "passed": false,
+    "skipped": 0,
+    "task_id": "http-retry-after",
+    "tests": 20,
+    "timed_out": false
+  },
+  "retry_after_solution": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "passed": true,
+    "skipped": 0,
+    "task_id": "http-retry-after",
+    "tests": 20,
+    "timed_out": false
   }
 }

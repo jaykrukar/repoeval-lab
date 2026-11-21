@@ -1,0 +1,6 @@
+{
+  "task_id": "http-retry-after",
+  "test_file": "checks/test_retry_after.py",
+  "timeout_seconds": 15,
+  "description": "Parse delay-seconds and HTTP-date Retry-After values safely."
+}

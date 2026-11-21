@@ -19,6 +19,7 @@ def main(argv=None) -> int:
     else:
         print(f"Task: {result.task_id} | {'PASS' if result.passed else 'FAIL'} | "
               f"tests={result.tests} failures={result.failures} errors={result.errors} "
+              f"skipped={result.skipped} duration={result.duration_seconds:.3f}s "
               f"timeout={result.timed_out}")
         if not result.passed:
             print(result.output)
