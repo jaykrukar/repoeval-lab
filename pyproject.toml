@@ -18,5 +18,8 @@ repoeval = "repoeval.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+repoeval = ["task_template/*.md", "task_template/*.json", "task_template/starter/*.py", "task_template/solution/*.py", "task_template/checks/*.py"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

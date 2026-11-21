@@ -1,0 +1,3 @@
+requirement_id,requirement,scenario,input,expected_result,test_name,covered,evidence_or_gap
+R1,Replace whitespace runs with one hyphen,Multiple spaces,"Red  Fox",red-fox,test_repeated_spaces,,
+R2,Reject non-string input,Wrong type,42,TypeError,test_non_string_type,,

@@ -45,9 +45,25 @@ def load_manifest(path: Path) -> dict:
     timeout = data.get("timeout_seconds", 15)
     if type(timeout) is not int or not 1 <= timeout <= 300:
         raise ValueError("timeout_seconds must be an integer from 1 to 300")
-    test_file = (path.parent / data["test_file"]).resolve()
-    if not test_file.is_file() or not test_file.is_relative_to(path.parent.resolve()):
-        raise ValueError("test_file must identify a file inside the manifest directory")
+    task_root = path.parent.resolve()
+    for key in ("test_file", "prompt_file"):
+        value = data.get(key)
+        if value is None and key == "prompt_file":
+            continue
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{key} must be a nonempty relative path")
+        target = (path.parent / value).resolve()
+        if not target.is_file() or not target.is_relative_to(task_root):
+            raise ValueError(f"{key} must identify a file inside the manifest directory")
+    for key in ("starter_dir", "solution_dir"):
+        if key not in data:
+            continue
+        value = data[key]
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{key} must be a nonempty relative path")
+        target = (path.parent / value).resolve()
+        if not target.is_dir() or not target.is_relative_to(task_root):
+            raise ValueError(f"{key} must identify a directory inside the manifest directory")
     data["timeout_seconds"] = timeout
     return data
 
