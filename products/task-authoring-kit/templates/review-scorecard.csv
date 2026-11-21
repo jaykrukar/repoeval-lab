@@ -1,0 +1,11 @@
+dimension,score_0_to_2,evidence,action_or_rationale
+Prompt is self-contained,,,
+Acceptance criteria are observable,,,
+Tests align with written contract,,,
+Boundary cases are represented,,,
+Oracle is independent of reference,,,
+Alternative correct implementations are accepted,,,
+Plausible incorrect shortcuts are rejected,,,
+Run is deterministic and reproducible,,,
+Human solve was completed from prompt alone,,,
+Limitations and AI assistance are disclosed,,,

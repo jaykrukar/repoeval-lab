@@ -1,0 +1,9 @@
+{
+  "task_id": "__TASK_ID__",
+  "description": "Normalize a short user-provided tag according to the written contract.",
+  "test_file": "checks/test_task.py",
+  "prompt_file": "CHALLENGE.md",
+  "starter_dir": "starter",
+  "solution_dir": "solution",
+  "timeout_seconds": 15
+}
