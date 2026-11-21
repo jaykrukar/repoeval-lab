@@ -12,6 +12,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import xml.etree.ElementTree as ET
 
 
@@ -25,6 +26,7 @@ class VerificationResult:
     errors: int
     skipped: int
     timed_out: bool
+    duration_seconds: float
     output: str
 
     def to_json(self) -> str:
@@ -69,26 +71,56 @@ def verify(manifest_path: str | Path, candidate_dir: str | Path) -> Verification
     verifier = (manifest_path.parent / manifest["test_file"]).resolve()
     env = dict(os.environ)
     # Explicitly prioritize submitted source over modules from the verifier location.
-    env["PYTHONPATH"] = os.pathsep.join([str(candidate_dir), env.get("PYTHONPATH", "")])
+    inherited_pythonpath = env.pop("PYTHONPATH", "")
+    env["PYTHONPATH"] = os.pathsep.join(
+        part for part in (str(candidate_dir), inherited_pythonpath) if part
+    )
+    # Do not let shell configuration silently add tests or plugins to a task run.
+    env.pop("PYTEST_ADDOPTS", None)
+    env.pop("PYTEST_PLUGINS", None)
+    env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
     with tempfile.TemporaryDirectory(prefix="repoeval-") as tmp:
         junit = Path(tmp) / "results.xml"
         command = [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
                    str(verifier), f"--junitxml={junit}"]
+        started = time.monotonic()
         try:
             result = subprocess.run(
                 command, cwd=candidate_dir, env=env, capture_output=True,
                 text=True, timeout=manifest["timeout_seconds"], check=False,
             )
-            counts = _junit_counts(junit)
+            duration = round(time.monotonic() - started, 6)
+            try:
+                counts = _junit_counts(junit)
+            except (ET.ParseError, OSError, ValueError) as exc:
+                return VerificationResult(
+                    task_id=manifest["task_id"], passed=False,
+                    exit_code=result.returncode, tests=0, failures=0,
+                    errors=1, skipped=0, timed_out=False,
+                    duration_seconds=duration,
+                    output=(result.stdout + "\n" + result.stderr +
+                            f"\nInvalid JUnit report: {exc}")[-8000:].strip(),
+                )
+            output = (result.stdout + "\n" + result.stderr)[-8000:].strip()
             return VerificationResult(
-                task_id=manifest["task_id"], passed=result.returncode == 0 and counts[0] > 0,
+                task_id=manifest["task_id"],
+                passed=(result.returncode == 0 and counts[0] > counts[3]),
                 exit_code=result.returncode, tests=counts[0], failures=counts[1],
                 errors=counts[2], skipped=counts[3], timed_out=False,
-                output=(result.stdout + "\n" + result.stderr)[-8000:].strip(),
+                duration_seconds=duration, output=output,
             )
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as exc:
+            duration = round(time.monotonic() - started, 6)
+            partial = exc.stdout or b""
+            partial_err = exc.stderr or b""
+            if isinstance(partial, bytes):
+                partial = partial.decode("utf-8", errors="replace")
+            if isinstance(partial_err, bytes):
+                partial_err = partial_err.decode("utf-8", errors="replace")
             return VerificationResult(
                 task_id=manifest["task_id"], passed=False, exit_code=None,
                 tests=0, failures=0, errors=0, skipped=0, timed_out=True,
-                output="Verification timed out; no result accepted.",
+                duration_seconds=duration,
+                output=(str(partial) + "\n" + str(partial_err) +
+                        "\nVerification timed out; no result accepted.")[-8000:].strip(),
             )
